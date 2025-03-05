@@ -1,0 +1,14 @@
+if ! [[ -f ~/.cd_history ]]; then
+    touch ~/.cd_history
+fi
+
+
+cd() {
+    
+    if [[ $CDHISTORYOFFSET -z ]]; then
+        CDHISTORYOFFSET=0
+    fi
+    CDHISTORYOFFSET=$CDHISTORYOFFSET+1
+    echo $@ >> ~/.cd_history
+    cd $@
+}
