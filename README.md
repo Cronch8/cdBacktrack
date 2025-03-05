@@ -6,7 +6,7 @@ Currently only bash is supported.
 
 ## Usage
 
-As you navigate around it stores a history of locations. Then with `backtrack` (or a keybind if you set that) you go to the prevous directory. Think of it as the back arrow in aa browser.
+As you navigate around it stores a history of locations. Then with `backtrack` (or a keybind if you set that) you go to the prevous directory. Think of it as the back arrow in a browser.
 
 `advance` is the second function, it works as you'd expect. It goes forward in the directory history.
 

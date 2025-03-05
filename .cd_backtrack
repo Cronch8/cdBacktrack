@@ -25,7 +25,7 @@ $(pwd)"
 backtrack() {
     readarray -t history <<< $CDHISTORY
     if [[ 1 == $CDHISTORYOFFSET ]]; then 
-        echo "cant backtrack furter"
+        echo "Can't backtrack furter"
         return 1
     fi
     export CDHISTORYOFFSET=$(( $CDHISTORYOFFSET-1 ))
@@ -40,7 +40,7 @@ backtrack() {
 advance() {
     readarray -t history <<< $CDHISTORY
     if [[ $CDHISTORYLENGTH == $CDHISTORYOFFSET ]]; then 
-        echo "cant advance furter"
+        echo "Can't advance furter"
         return 1
     fi
     export CDHISTORYOFFSET=$(( $CDHISTORYOFFSET+1 ))
