@@ -41,3 +41,19 @@ backtrack() {
     export CDHISTORY="${CDHISTORY%$'\n'}"
 }
 
+advance() {
+    readarray -t history <<< $CDHISTORY
+    if [[ $CDHISTORYLENGTH == $CDHISTORYOFFSET ]]; then 
+        echo "cant advance furter"
+        return 1
+    fi
+    export CDHISTORYOFFSET=$(( $CDHISTORYOFFSET+1 ))
+    nextLoc="${history[$(($CDHISTORYOFFSET-1))]}"
+    echo "cd -- $nextLoc/"
+    command cd "$nextLoc"
+    IFS=$'\n' read -r -d '' -a paths <<< "$CDHISTORY"
+    export CDHISTORY=$(printf "%s${newline}" "${paths[@]}")
+    export CDHISTORY="${CDHISTORY%$'\n'}"
+}
+
+
