@@ -2,13 +2,42 @@ if ! [[ -f ~/.cd_history ]]; then
     touch ~/.cd_history
 fi
 
+newline=$'\n'
+
+# save the inital locaton
+export CDHISTORY="$(pwd)"
+export CDHISTORYOFFSET=1
+export CDHISTORYLENGTH=1
 
 cd() {
-    
-    if [[ $CDHISTORYOFFSET -z ]]; then
-        CDHISTORYOFFSET=0
+    # remove old paths when you went back in history
+    if ! [[ $CDHISTORYOFFSET -eq $CDHISTORYLENGTH ]]; then
+        IFS=$'\n' read -r -d '' -a paths <<< "$CDHISTORY"
+        paths=("${paths[@]:0:CDHISTORYOFFSET}") # Bash 4.3+ only
+        export CDHISTORY=$(printf "%s${newline}" "${paths[@]}")
+        export CDHISTORY="${CDHISTORY%$'\n'}"
+        export CDHISTORYLENGTH=$CDHISTORYOFFSET
     fi
-    CDHISTORYOFFSET=$CDHISTORYOFFSET+1
-    echo $@ >> ~/.cd_history
-    cd $@
+    export CDHISTORYOFFSET=$(( $CDHISTORYOFFSET+1 ))
+    export CDHISTORYLENGTH=$(( $CDHISTORYLENGTH+1 ))
+    export CDHISTORYOFFSET=$CDHISTORYLENGTH
+    command cd "$@"
+    export CDHISTORY="$CDHISTORY
+$(pwd)"
 }
+
+backtrack() {
+    readarray -t history <<< $CDHISTORY
+    if [[ 1 == $CDHISTORYOFFSET ]]; then 
+        echo "cant backtrack furter"
+        return 1
+    fi
+    export CDHISTORYOFFSET=$(( $CDHISTORYOFFSET-1 ))
+    prevLoc="${history[$(($CDHISTORYOFFSET-1))]}"
+    echo "cd -- $prevLoc/"
+    command cd "$prevLoc"
+    IFS=$'\n' read -r -d '' -a paths <<< "$CDHISTORY"
+    export CDHISTORY=$(printf "%s${newline}" "${paths[@]}")
+    export CDHISTORY="${CDHISTORY%$'\n'}"
+}
+
